@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Colorlib Templates">
+    <meta name="author" content="Colorlib">
+    <meta name="keywords" content="Colorlib Templates">
+
+    <!-- Title Page-->
+    <title>Registration</title>
+
+    <!-- Icons font CSS-->
+    <link href="fontawesome/vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+    <link href="fontawesome/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <!-- Font special for pages-->
+    <link href="https://fonts.googleapis.com/css?family=Poppins:100,100i,200,200i,300,300i,400,400i,500,500i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
+
+    <!-- Vendor CSS-->
+    <link href="fontawesome/vendor/select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="fontawesome/vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="fontawesome/css/main.css" rel="stylesheet" media="all">
+</head>
+
+<style>
+    .errorAnnot{
+        color: #c80000;
+        font-size: 80%;
+    }
+</style>
+
+<body>
+    <div class="page-wrapper bg-gra-01 p-b-100 font-poppins" style="padding-top: 50px;">
+        <div class="wrapper wrapper--w780">
+            <div class="card card-3">
+                <div class="card-heading"></div>
+                <div class="card-body">
+                    <h2 class="title">Registration Info</h2>
+                        <div class="input-group">
+                            <input id="userName" class="input--style-3" type="text" placeholder="Name" name="name">
+                        </div>
+                        <div class="input-group">
+                            <input id="userSurname" class="input--style-3" type="text" placeholder="Surname" name="surname">
+                        </div>
+                        <p class="errorAnnot" id="erLog">Current user already exist</p>
+                        <div class="input-group" >
+                            <input id="userLogin" class="input--style-3" type="text" placeholder="Login" name="login">
+                        </div>
+                        <p class="errorAnnot" id="erPas1">Not the same password</p>
+                        <p class="errorAnnot" id="erPasShort">Too short password</p>
+                        <div class="input-group">
+                            <input id="userPassword" class="input--style-3" type="password" placeholder="Password" name="password">
+                        </div>
+                        <p class="errorAnnot" id="erPas2">Not the same password</p>
+                        <div class="input-group">
+                            <input id="userRepPassword" class="input--style-3" type="password" placeholder="Repeat password" name="password">
+                        </div>
+<!--                        <div class="input-group">-->
+<!--                            <input class="input&#45;&#45;style-3 js-datepicker" type="text" placeholder="Birthdate" name="birthday">-->
+<!--                            <i class="zmdi zmdi-calendar-note input-icon js-btn-calendar"></i>-->
+<!--                        </div>-->
+                        <div class="input-group">
+                            <div class="rs-select2 js-select-simple select--no-search">
+                                <select id="userSex" name="gender">
+                                    <option disabled="disabled" selected="selected">Gender</option>
+                                    <option>Male</option>
+                                    <option>Female</option>
+                                    <option>Other</option>
+                                </select>
+                                <div class="select-dropdown"></div>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <input id="userEmail" class="input--style-3" type="email" placeholder="Email" name="email">
+                        </div>
+<!--                        <div class="input-group">-->
+<!--                            <input class="input&#45;&#45;style-3" type="text" placeholder="Phone" name="phone">-->
+<!--                        </div>-->
+                        <div class="p-t-10">
+                            <button class="btn btn--pill btn--green" type="submit" id="subButton">Submit</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Jquery JS-->
+    <script src="fontawesome/vendor/jquery/jquery.min.js"></script>
+    <!-- Vendor JS-->
+    <script src="fontawesome/vendor/select2/select2.min.js"></script>
+    <script src="fontawesome/vendor/datepicker/moment.min.js"></script>
+    <script src="fontawesome/vendor/datepicker/daterangepicker.js"></script>
+
+    <!-- Main JS-->
+    <script src="fontawesome/js/global.js"></script>
+
+</body>
+
+<script>
+    $(document).ready(function(){
+        $("#erLog").hide();
+        $("#erPas1").hide();
+        $("#erPas2").hide();
+        $("#erPasShort").hide();
+    });
+
+    $(document).on('click', '#subButton', function () {
+        $("#erPasShort").hide();
+
+        if ($('#userPassword').val() === $('#userRepPassword').val()){
+            $("#erPas1").hide();
+            $("#erPas2").hide();
+
+            if($('#userLogin').val() !== ""){
+
+                $("#erLog").hide();
+
+            var user = new Object();
+        user.name = $('#userName').val();
+        user.surname = $('#userSurname').val();
+        user.login = $('#userLogin').val();
+        user.password = $('#userPassword').val();
+        user.sex = $('#userSex').val();
+        user.email = $('#userEmail').val();
+
+        var jsonUserReg = JSON.stringify(user);
+
+        $.ajax({
+            url: 'https://localhost:8443/registration',
+            type: 'post',
+            data: jsonUserReg,
+            contentType: 'application/json',
+            success: function (data, status, xhr) {
+                if(data === "exist"){
+                    $("#erLog").show();
+                } else {
+                    var aut = new Object();
+                                aut.username = $('#userLogin').val();
+                                aut.password = $('#userPassword').val();
+
+                                var jsonAut = JSON.stringify(aut);
+                                $.ajax({
+                                    url: 'https://localhost:8443/login',
+                                    type: 'post',
+                                    data: jsonAut,
+                                    contentType: 'application/json',
+                                    success: function(data, status, xhr) {
+
+                                        var token = xhr.getResponseHeader('Authorization');
+                                        var role = xhr.getResponseHeader('Role');
+
+                                        localStorage.setItem('token', token);
+                                        localStorage.setItem('role', role);
+
+                                        window.location.replace("https://localhost:8443/");
+                                    },
+                                    error: (e) => {
+                                        console.log(e);
+                                        alert('non correct data');
+                                    }
+                                })
+                }
+            },
+            error: (e) => {
+                $("#erPasShort").show();
+            }
+        })
+            } else{
+                $("#erLog").show();
+            }
+    } else{
+            $("#erPas1").show();
+            $("#erPas2").show();
+        }
+            });
+</script>
+</html>
+<!-- end document-->

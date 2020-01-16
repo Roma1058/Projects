@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="UTF-8">
+    <title>Home page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <p><input type="button" value="HOME" id="buttonToHome"></p>
+</head>
+<body>
+<p><input type="button" id="allButton" value="ALL"></p>
+<p><input type="button" id="userButton" value="USER"></p>
+<p><input type="button" id="adminButton"value="ADMIN"></p>
+<p><input type="button" id="singInButton" value="SignIn"></p>
+</body>
+<script>
+    $('#allButton').click(() =>  {
+        $.ajax({
+            url: 'https://localhost:8443/all',
+            // headers: {
+            //     'Authorization': `${ localStorage.getItem('token')}`,
+            // },
+            method: 'get',
+            success: function(data){
+                window.location.replace("https://localhost:8443/all");
+            },
+            error: (e) => {
+                console.log(e);
+                alert('error')
+            }
+        });
+    });
+
+     $('#singInButton').click(() =>  {
+            $.ajax({
+                url: 'https://localhost:8443/auth',
+                method: 'get',
+                success: function(data){
+                    window.location.replace("https://localhost:8443/auth");
+                },
+                error: (e) => {
+                    console.log(e);
+                    alert('error')
+                }
+            });
+        });
+
+     $('#userButton').click(() =>  {
+         if(localStorage.getItem('token') !== null){
+             $.ajax({
+                 url: 'https://localhost:8443/userView',
+                 headers: {
+                     'Authorization': `${ localStorage.getItem('token')}`,
+                 },
+                 method: 'get',
+                 success: function(data){
+                     window.location.replace("https://localhost:8443/userView");
+                 },
+                 error: (e) => {
+                     console.log(e);
+                     alert('error')
+                 }
+             });
+             }
+         });
+
+     $('#adminButton').click(() =>  {
+              if(localStorage.getItem('token') !== null){
+                  $.ajax({
+                      url: 'https://localhost:8443/adminView',
+                      headers: {
+                          'Authorization': `${ localStorage.getItem('token')}`,
+                      },
+                      method: 'get',
+                      success: function(data){
+                          //$("body").html(data);
+                          document.open();
+                          document.write(data);
+                          document.close();
+                      },
+                      error: (e) => {
+                          console.log(e);
+                          alert('error')
+                      }
+                  });
+                  }
+              });
+
+     $('#buttonToHome').click(() =>  {
+             $.ajax({
+                 url: 'https://localhost:8443/',
+                 // headers: {
+                 //     'Authorization': `${ localStorage.getItem('token')}`,
+                 // },
+                 method: 'get',
+                 success: function(data){
+                     window.location.replace("https://localhost:8443/");
+                 },
+                 error: (e) => {
+                     console.log(e);
+                     alert('error')
+                 }
+             });
+         });
+
+
+    // function userButton() {
+    //     if(localStorage.getItem('token') !== null){
+    //         $.ajax({
+    //             url: 'https://localhost:8443/userView',
+    //             headers: {
+    //                 'Authorization': `${ localStorage.getItem('token')}`,
+    //             },
+    //             method: 'get',
+    //             success: function(data){
+    //                 $("html").html(data);
+    //             },
+    //             error: (e) => {
+    //                 console.log(e);
+    //                 alert('error')
+    //
+    //             }
+    //         });
+    //     }
+    //     }
+
+
+</script>
+
+</html>

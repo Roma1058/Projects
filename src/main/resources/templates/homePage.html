@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<head xmlns:th="http://www.springframework.org/schema/security">
+    <meta charset="UTF-8">
+    <title>Home page</title>
+</head>
+<html xmlns:th="http://www.thymeleaf.org">
+<html>
+<head th:insert="fragments.html :: headerfiles">
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+
+<style>
+    #bigCont{
+        background-size: cover;
+        background-position: center;
+        height: 93.3vh;
+    }
+
+    .textCont{
+        display: block;
+        width: 85%;
+        text-align: center;
+    }
+
+    .homeText{
+        line-height: 1.2;
+        font-size: 350%;
+        text-shadow: 0px 0px 16px rgba(0, 0, 0,0.3);
+        color: white;
+    }
+</style>
+
+<body>
+<header th:insert="fragments.html :: nav"></header>
+<!-- Page content goes here-->
+<div id="bigCont" style="background-color:none; background-image:url(https://www.thetrainline.com/cmsmedia/cms/7919/bus-coach-header-uk.jpg);">
+    <div class="textCont">
+        <h1 class="homeText" style=" padding: 17vh 20px 20px 0px;">Find right bus and coach tickets</h1>
+        <h2 class="homeText" style=" font-size: 320%;">From Lviv to any city of Ukraine</h2>
+        <p class="homeText" style="font-size: 250%">Just login and choose your ticket</p>
+    </div>
+
+</div>
+</body>
+
+</html>

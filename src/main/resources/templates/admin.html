@@ -1,0 +1,19 @@
+<body>
+    <p>Only admin can see this page</p>
+    <p><input type="button" value="Home" id="HomeButton"></p>
+</body>
+<script >
+    $('#HomeButton').click(() =>  {
+                $.ajax({
+                    url: 'https://localhost:8443/',
+                    method: 'get',
+                    success: function(data){
+                        window.location.replace("https://localhost:8443/");
+                    },
+                    error: (e) => {
+                        console.log(e);
+                        alert('error')
+                    }
+                });
+            });
+</script>

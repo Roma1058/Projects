@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Connect to DB</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body onload="createTable()">
+
+<!-- Modal Structure -->
+<div id="updateStop" class="modal">
+    <div class="modal-content">
+        <div class="placeInpCont">
+            <div class="input-field col s6">
+                <input id="placeUp" type="text" class="validate">
+                <label for="placeUp">New name of the stop</label>
+                <input id="placeUpID" type="text" class="validate" style="visibility: hidden" >
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <a id="confUpdate" href="#!" class="modal-close waves-effect waves-green btn-flat" onclick="CUpdate()">Ok</a>
+    </div>
+</div>
+
+<form class="newCont">
+
+
+    <div class="addCont">
+
+        <div class="placeInpCont">
+            <div class="input-field col s6">
+                <input id="placeInp" type="text" class="validate" class>
+                <label for="placeInp">Name of the stop</label>
+            </div>
+        </div>
+
+        <div class="addButCont">
+            <a id = "addStop" class="waves-effect waves-light btn">add</a>
+        </div>
+
+    </div>
+</form>
+
+<div id="tableCont"></div>
+
+
+<style>
+    .getContainer{
+        margin: 10px;
+    }
+
+    .placeInpCont{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        width: 20%;
+        margin: 10px;
+    }
+
+    .addCont{
+        display: flex;
+
+    }
+
+    .addButCont{
+        display: flex;
+        margin: 27px 0;
+    }
+
+    .tdButton{
+        width: 8%;
+        display: -webkit-inline-box;
+    }
+
+    td, th{
+        width: 12%;
+    }
+
+
+</style>
+
+
+
+<script>
+
+    $(document).ready(function(){
+        $('.modal').modal();
+    });
+
+    const addStopButton = document.querySelector("#addStop");
+
+
+    var tableHead = new Array();
+    tableHead = ['Id', 'Name of stop', 'Update', 'Delete'];
+
+    var count = 0;
+    let $stopNameInput = $('#placeUp');
+    let $modal = $('#updateStop');
+    let $stopIdInput = $('#placeUpID');
+
+    function createTable() {
+        var empTable = document.createElement('table');
+        empTable.setAttribute('id', 'empTable');            // SET THE TABLE ID.
+
+        var tr = empTable.insertRow(-1);
+
+        for (var h = 0; h < tableHead.length; h++) {
+            var th = document.createElement('th');          // TABLE HEADER.
+
+            if(h + 3 > tableHead.length){
+                th.setAttribute('class', 'tdButton')
+            }
+
+            th.innerHTML = tableHead[h];
+            tr.appendChild(th);
+        }
+
+        var div = document.getElementById('tableCont');
+        div.appendChild(empTable);    // ADD THE TABLE TO YOUR WEB PAGE.
+
+        const promise = axios.get('http://localhost:8090/stop').
+        then(function(data){
+            data.data.forEach(stop => {
+
+            var markup = "<tr><td>" + stop.id + "</td><td>" + stop.placeName + "</td></tr>";
+            $("table").append(markup);
+
+
+            createButton('update', count);
+            createButton('delete', count);
+
+            count++;
+        });
+        });
+    }
+
+    function verify(){
+        if(!document.getElementById('placeInp').value.trim().length){
+            alert("Please enter the place");
+            return false;
+        }
+        return true;
+    }
+
+    addStopButton.addEventListener("click", () => {
+        var stopName = $('#placeInp').val();
+
+        if(verify()){
+            const promise = axios.post(`/stop?stopName=${stopName}`).
+            then(function (data) {
+
+                var markup = "<tr><td>" + data.data + "</td><td>" + stopName + "</td></tr>";
+                $("table").append(markup);
+
+                createButton('update', count);
+                createButton('delete', count);
+
+                count++
+            })
+        }
+    });
+
+
+    function createButton(type, count) {
+        var button = document.createElement('input');
+
+        // SET INPUT ATTRIBUTE.
+        button.setAttribute('type', 'button');
+        button.setAttribute('value', type);
+        button.setAttribute('class', 'waves-effect waves-light btn');
+        button.setAttribute('id', type+'Button'+count)
+
+        // ADD THE BUTTON's 'onclick' EVENT.
+        button.setAttribute('onclick', type+'Row(this)');
+
+        var t = document.getElementById("empTable"), // This have to be the ID of your table, not the tag
+            r = t.getElementsByTagName("tr")[count+1];
+
+        var tdButton = document.createElement('td');          // TABLE HEADER.
+        tdButton.setAttribute('class', 'tdButton');
+        tdButton.appendChild(button);
+        r.appendChild(tdButton);
+    }
+
+    function CUpdate() {
+        
+        const promise = axios.put(`stop?id=${$stopIdInput.val()}&stopNameUpdate=${$stopNameInput.val()}`).
+        then(function (data) {
+            location.reload();
+        })
+    }
+
+    function updateRow(oButton) {
+        var name = oButton.parentElement.parentElement.getElementsByTagName("td")[1].innerText;
+        var id = oButton.parentElement.parentElement.getElementsByTagName("td")[0].innerText;
+        $modal.modal('open');
+        $stopNameInput.val(name);
+        $stopIdInput.val(id);
+    }
+
+
+
+
+    function deleteRow(oButton) {
+
+        var id = oButton.parentElement.parentElement.getElementsByTagName("td")[0].innerText;
+
+
+        const promise = axios.delete(`/stop?id=${id}`).then(function () {
+
+            var empTab = document.getElementById('empTable');
+            empTab.deleteRow(oButton.parentNode.parentNode.rowIndex);       // BUTTON -> TD -> TR.
+        });
+
+    }
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+</body>
+</html>

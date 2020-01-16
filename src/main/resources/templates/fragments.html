@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<!-- Fragment #1 : Header files contains css and js references -->
+<head th:fragment="headerfiles">
+    <title>Introduction to SpringBoot Security</title>
+    <meta charset="UTF-8"/>
+    <base href="/">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link  type="text/css" th:href="@{/fontawesome/bootstrap.min.css}" rel="stylesheet"/>
+    <link type="text/css" th:href="@{/fontawesome/css/all.css}" rel="stylesheet">
+</head>
+<body>
+
+<!-- Fragment #2 : Navbar contains nav links -->
+<div th:fragment="nav">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#" th:href="@{~/}"><i class="fa fa-home"></i>Home</a>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul id="navbarLi" class="navbar-nav mr-auto">
+                <li  class="nav-item">
+                    <a class="nav-link" href="#" th:href="@{~/all}">Profile</a>
+                </li>
+            </ul>
+
+            <div id="log"></div>
+        </div>
+<script >
+
+    $(document).ready(function(){
+        if(localStorage.getItem('token') !== "null"){
+             $('#log').append('<button id="logOutButton" class="btn btn-outline-danger my-2 my-sm-0 btn-sm" type="submit">Logout</button>')
+
+        } else{
+            $('#log').append('<button id="logInButton" class="btn btn-outline-info my-2 my-sm-0 btn-sm" type="submit">LogIn</button>')
+        }
+
+        if(localStorage.getItem('role') === "USER"){
+            $('#navbarLi').append(' <li class="nav-item">\n' +
+                '                           <a id="userViewLink" class="nav-link" >User</a>\n' +
+                '                        </li>')
+        } else if(localStorage.getItem('role') === "ADMIN"){
+            $('#navbarLi').append(' <li class="nav-item"><a id="adminViewLink" class="nav-link" >Admin</a></li>');
+            $('#navbarLi').append(' <li class="nav-item"><a id="admStop" class="nav-link" >Stop Service</a></li>');
+            $('#navbarLi').append(' <li class="nav-item"><a id="admTest" class="nav-link" >Test</a></li>');
+        }
+    });
+
+    $(document).on('click', '#logOutButton', function () {
+        localStorage.setItem('token', null);
+        localStorage.setItem('role', null);
+        location.reload()
+    });
+
+    $(document).on('click', '#logInButton', function () {
+        $.ajax({
+            url: 'https://localhost:8443/auth',
+            type: 'get',
+            success: function(data, status, xhr) {
+                window.location.replace("https://localhost:8443/auth");
+            },
+            error: (e) => {
+                console.log(e);
+                alert('error')
+            }
+        })
+    });
+
+    $(document).on('click', '#userViewLink', function () {
+        $.ajax({
+            url: 'https://localhost:8443/userView',
+            headers: {
+                            'Authorization': `${ localStorage.getItem('token')}`,
+                        },
+            type: 'get',
+            success: function(data, status, xhr) {
+                $('#bigCont').empty();
+                $('#bigCont').html(data);
+            },
+            error: (e) => {
+                console.log(e);
+                alert('error')
+            }
+        })
+    });
+
+    $(document).on('click', '#admStop', function () {
+       sendRequest('admStop');
+    });
+
+    $(document).on('click', '#admTest', function () {
+        sendRequest('testONE');
+    });
+
+    $(document).on('click', '#adminViewLink', function () {
+            $.ajax({
+                url: 'https://localhost:8443/adminView',
+                headers: {
+                    'Authorization': `${ localStorage.getItem('token')}`,
+                },
+                type: 'get',
+                success: function(data, status, xhr) {
+                    $('#bigCont').empty();
+                    $('#bigCont').html(data);
+                },
+                error: (e) => {
+                    console.log(e);
+                    alert('error')
+                }
+            })
+        });
+
+    function sendRequest(urlEnd) {
+      $.ajax({
+                      url: 'https://localhost:8443/'+urlEnd,
+                      headers: {
+                          'Authorization': `${ localStorage.getItem('token')}`,
+                      },
+                      type: 'get',
+                      success: function(data, status, xhr) {
+                          $('#bigCont').empty();
+                          $('#bigCont').html(data);
+                          //var newDoc = document.open("text/html", "replace");
+                          //newDoc.write(data);
+                          //newDoc.close();
+                      },
+                      error: (e) => {
+                          console.log(e);
+                          alert('error')
+                      }
+                  })
+    }
+</script>
+
+    </nav>
+</div>
+
+</body>
+</html>

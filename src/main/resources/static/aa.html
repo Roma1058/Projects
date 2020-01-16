@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="UTF-8">
+  <title>Test</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+</head>
+<body>
+
+                    <div class="form-group">
+                        <label for="username">Username</label>
+                        <input type="text" class="form-control" id="username" name="username"
+                               placeholder="Username">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" name="password"
+                               placeholder="Password">
+                    </div>
+
+                    <!-- Login Button -->
+                    <div class="form-actions" style="margin-top: 12px;">
+                        <button type="submit" class="btn btn-success" id="submitButton">Log in</button>
+                   </div>
+
+</body>
+
+<script>
+    $('#submitButton').click(() => {
+        var log = $('#username').val();
+
+        var aut = new Object();
+        aut.username = $('#username').val();
+        aut.password = $('#password').val();
+
+        var jsonAut = JSON.stringify(aut);
+
+        var token;
+
+        // var req = {
+        //     login: JSON.stringify($('#username').val()),
+        //     password: $('#password').val()
+        // };
+        $.ajax({
+            url: 'https://localhost:8443/login',
+            type: 'post',
+            data: jsonAut,
+            contentType: 'application/json',
+            success: function(data, status, xhr) {
+
+                token = xhr.getResponseHeader('Authorization');
+                localStorage.setItem('token', token);
+
+                // $.ajax({
+                //     url: 'https://localhost:8443/all',
+                //     headers: {
+                //         'Authorization': `${ localStorage.getItem('token')}`,
+                //     },
+                //     method: 'get',
+                //     success: function(data){
+                //         $("html").html(data);
+                //     },
+                //     error: (e) => {
+                //         console.log(e);
+                //         alert('error')
+                //     }
+                // });
+                window.location.replace("https://localhost:8443/home");
+                alert(token)
+            },
+            error: (e) => {
+                console.log(e);
+                alert('error')
+            }
+        })
+
+
+
+        // const promise = axios.post('https://localhost:8443/login', jsonAut);
+        // console.log(promise);
+    });
+
+</script>
+</html>
