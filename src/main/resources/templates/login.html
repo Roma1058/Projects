@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>LogIn</title>
+    <link rel="stylesheet" href="/css/main.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+</head>
+<body background="https://static.independent.co.uk/s3fs-public/thumbnails/image/2019/02/15/23/forest-smoke.jpg"
+      style="background-position: center; background-repeat: no-repeat; background-size: cover;" onload="checkUser()">
+<div id="username-page">
+    <div class="username-page-container">
+        <h1 class="title">Please authenticate</h1>
+        <form id="usernameForm" name="usernameForm" th:action="@{/signin}" method="post">
+            <div class="form-group">
+                <p class="errorAnnot" id="error">Uncorrect data</p>
+                <input type="text" id="username" name="username" placeholder="Username"
+                       autocomplete="off" class="form-control" onchange="nameChange()"/>
+                <input type="password" id="password" name="password" placeholder="Password"
+                       autocomplete="off" class="form-control" />
+            </div>
+            <div class="form-group">
+                <button type="submit" class="accent username-submit">Start
+                    Chatting</button>
+            </div>
+            <div class="form-ref">
+                <a href="http://localhost:9000/signup">Sign Up</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function checkUser() {
+        $("#error").hide();
+
+        var name = window.sessionStorage.getItem('username');
+        if(name !== null){
+            $('#username').val(name);
+        }
+    }
+
+    function nameChange() {
+        window.sessionStorage.setItem('username', $('#username').val());
+    }
+
+    // function submitFunc() {
+    //     //onsubmit="submitFunc()"
+    //
+    //     //th:action="@{/signin}"
+    //
+    //     if( $('#username').val() !== null && $('#password').val() !== null){
+    //         window.sessionStorage.setItem('username', $('#username').val());
+    //
+    //         var user = new Object();
+    //         user.username = $('#username').val();
+    //         user.password = $('#password').val();
+    //
+    //         var jsonUserLog = JSON.stringify(user);
+    //
+    //         $.ajax({
+    //             url: 'http://localhost:9000/signin',
+    //             type: 'post',
+    //             data: jsonUserLog,
+    //             contentType: 'application/json',
+    //             success: function () {
+    //
+    //             },
+    //             error: (e) => {
+    //                 $("#error").show();
+    //             }
+    //         })
+    //     }
+    // }
+</script>
+
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
+<script
+        src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+<script src="/js/main.js"></script>
+</body>
+</html>
